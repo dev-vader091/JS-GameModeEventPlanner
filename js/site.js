@@ -74,7 +74,9 @@ function buildDropdown() {
   let currEvents = events;
 
   // pull out JUST the city names 
-  let eventCities = currEvents.map((event) => event.city);
+  let eventCities = currEvents.map((event) =>{
+    return event.city;
+  } );
   // filter the cities to only DISTINCT city names
   let distinctCities = [...new Set(eventCities)];
 
@@ -89,5 +91,135 @@ function buildDropdown() {
   menuItem.textContent = "All Cities";
   menuItem.setAttribute('data-string', 'All');
   // add item to the page 
-  dropdownMenu.appendChild(menuItem);
+  dropdownMenu.appendChild(dropdownTemplateNode);
+
+  for(let i = 0; i < distinctCities.length; i++) {
+    let cityMenuItem = document.importNode(template.content, true);
+    let cityButton = cityMenuItem.querySelector('a');
+    
+    cityButton.textContent = distinctCities[i];
+    cityButton.setAttribute('data-string',distinctCities[i]);
+    dropdownMenu.appendChild(cityMenuItem);
+  }
+
+  displayStats(currEvents);
 }
+
+function displayStats(eventsArray) {
+  let stats = calculateStats(eventsArray)
+  // let totalAttendance = calculateTotal(eventsArray);
+  // let averageAttendance = calculateAverage(eventsArray);
+  // let mostAttended = calculateMostAttended(eventsArray);
+  // let leastAttended = calculateLeastAttended(eventsArray);
+
+  // do math
+  
+  document.getElementById('total').textContent = stats.total.toLocaleString();
+  document.getElementById('average').textContent = stats.averageAttendance.toLocaleString("en-US", {
+    maximumFractionDigits: 0,
+    minimumFractionDigits: 0
+  });
+  document.getElementById('most').textContent = stats.maxAttendance.toLocaleString();
+  document.getElementById('least').textContent = stats.minAttendance.toLocaleString();
+
+}
+
+function calculateStats(eventsArray) {
+
+  let sum = 0;
+  let average = 0;
+  let max = eventsArray[0].attendance;
+  let min = eventsArray[0].attendance;
+
+
+
+  for(i = 0; i < eventsArray.length; i++) {
+    let currentEvent = eventsArray[i];
+    
+    sum += currentEvent.attendance;
+
+    if(currentEvent.attendance > max) {
+      max = currentEvent.attendance;
+    }
+  
+    if(currentEvent.attendance < min) {
+      min = currentEvent.attendance;
+    }
+
+  }
+
+  average = sum / eventsArray.length;
+
+  let stats = {
+    total: sum,
+    averageAttendance: average,
+    minAttendance: min,
+    maxAttendance: max
+  }
+  
+
+  return stats;
+  
+}
+
+// function calculateTotal(eventsArray) {
+
+//   let sum = 0;
+
+//   for(i = 0; i <eventsArray.length; i++) {
+//     let currentEvent = eventsArray[i];
+//     sum += currentEvent.attendance;
+//   }
+
+//   return sum;
+// }
+
+// function calculateAverage(eventsArray) {
+  
+//   let sum = 0;
+  
+//   for(i = 0; i <eventsArray.length; i++) {
+//     let currentEvent = eventsArray[i];
+//     sum += currentEvent.attendance;
+//   }
+//   let avg = sum / eventsArray.length;
+  
+//   return avg;
+// }
+
+// function calculateMostAttended(eventsArray) {
+  
+//   let max = eventsArray[0].attendance;
+
+//   // for(i = eventsArray[1]; i < eventsArray.length; i++) {
+//   //   let currentEvent = eventsArray[i]
+//   //   if(currentEvent.attendance > most) {
+//   //     most = currentEvent.attendance;
+//   //   }
+//   //   return most
+//   // }
+
+//   for(i = 0; i < eventsArray.length; i++) {
+//     let currentEvent = eventsArray[i];
+
+//     if(currentEvent.attendance > max) {
+//       max = currentEvent.attendance;
+//     }
+
+//     return max
+//   }
+// }
+
+// function calculateLeastAttended(eventsArray) {
+//   let min = eventsArray[0].attendance;
+
+//   for(i = 0; i < eventsArray.length; i++) {
+//     let currentEvent = eventsArray[i];
+    
+//     if(currentEvent.attendance < min) {
+//       min = currentEvent.attendance;
+//     }
+
+//     return min
+//   }
+// }
