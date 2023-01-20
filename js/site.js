@@ -63,6 +63,19 @@ var events = [{
 },
 ];
 
+// let eventCities = events.map(function(event) {
+//  return event.city;
+// })
+
+// console.log(eventCities);
+
+// let distinctCities = eventCities.filter((city) => {
+  
+  
+// }
+// )
+// console.log(distinctCities);
+
 function buildDropdown() {
   // get the dropdown menu from the page
   let dropdownMenu = document.getElementById('eventDropdown');
@@ -71,7 +84,7 @@ function buildDropdown() {
   dropdownMenu.innerHTML = "";
 
   // get our events
-  let currEvents = events;
+  let currEvents = getEventData();
 
   // pull out JUST the city names 
   let eventCities = currEvents.map((event) =>{
@@ -103,6 +116,7 @@ function buildDropdown() {
   }
 
   displayStats(currEvents);
+  displayEventData(currEvents);
 }
 
 function displayStats(eventsArray) {
@@ -160,6 +174,102 @@ function calculateStats(eventsArray) {
 
   return stats;
   
+}
+
+function displayEventData(eventsArray) {
+
+  let tableBody = document.getElementById('eventTableBody');
+  const tableRowTemplate = document.getElementById('eventTableRowTemplate');
+
+  tableBody.innerHTML = '';
+
+  for(i = 0; i < eventsArray.length; i++) {
+    let eventRow = document.importNode(tableRowTemplate.content, true);
+    let currentEvent = eventsArray[i];
+
+    
+        // <td data-id="event"></td>
+        // <td data-id="city"></td>
+        // <td data-id="state"></td>
+        // <td data-id="attendance"></td>
+        // <td data-id="eventDate"></td>
+    
+    let tableCells = eventRow.querySelectorAll('td');
+    
+    tableCells[0].textContent = currentEvent.event;
+    tableCells[1].textContent = currentEvent.city;
+    tableCells[2].textContent = currentEvent.state;
+    tableCells[3].textContent = currentEvent.attendance;
+    tableCells[4].textContent = currentEvent.date;
+
+    tableBody.appendChild(eventRow);
+  }
+
+
+}
+
+function getEventData() {
+  let currentEvents = JSON.parse(localStorage.getItem('zdEventData'));
+
+  if (currentEvents == null) {
+      currentEvents = events;
+      localStorage.setItem('zdEventData', JSON.stringify(currentEvents) );
+  }
+
+  return currentEvents;
+}
+
+function getEvents(element) {
+  let currentEvents = getEventData();
+  let cityName = element.getAttribute('data-string');
+
+  let filteredEvents = currentEvents;
+
+
+  if(cityName !== 'All') {
+     filteredEvents = currentEvents.filter(
+      function (event) {
+          if(cityName == event.city) {
+        return event;
+      }
+    });
+
+  }
+
+  document.getElementById('statsHeader').textContent = cityName
+  displayStats(filteredEvents);
+  displayEventData(filteredEvents);
+}
+
+function saveEventData() {
+  let eventName = document.getElementById('newEventName').value;
+  let cityName = document.getElementById('newEventCity').value;
+  let eventAttendance = parseInt(document.getElementById('newEventAttendance').value);
+  let eventDate = document.getElementById('newEventDate').value;
+
+  eventDate = `${eventDate} 00:00`;
+  eventDate = new Date(eventDate).toLocaleDateString();
+
+  let stateSelect = document.getElementById('newEventState');
+  let state = stateSelect.options[stateSelect.selectedIndex].text;
+
+  let newEvent = {
+    attendance: eventAttendance,
+    event: eventName,
+    date: eventDate,
+    state: state,
+    city: cityName,
+  }
+
+  let currentEvents = getEventData();
+  currentEvents.push(newEvent)
+
+  localStorage.setItem('zdEventData', JSON.stringify(currentEvents));
+
+  // update the page
+  buildDropdown();
+  document.getElementById('statsHeader').textContent = "All";
+  document.getElementById('newEventForm').textContent = '';
 }
 
 // function calculateTotal(eventsArray) {

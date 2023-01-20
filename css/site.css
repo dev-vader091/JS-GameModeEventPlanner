@@ -84,4 +84,8 @@ footer {
   padding-left: 0.5rem;
 }
 
+.modal-title {
+  color: var(--zd-primary-clr);
+}
+
 /* END: Main Content Styles */
