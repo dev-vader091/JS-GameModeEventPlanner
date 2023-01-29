@@ -63,18 +63,6 @@ var events = [{
 },
 ];
 
-// let eventCities = events.map(function(event) {
-//  return event.city;
-// })
-
-// console.log(eventCities);
-
-// let distinctCities = eventCities.filter((city) => {
-  
-  
-// }
-// )
-// console.log(distinctCities);
 
 function buildDropdown() {
   // get the dropdown menu from the page
