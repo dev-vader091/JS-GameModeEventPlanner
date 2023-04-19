@@ -76,14 +76,223 @@
       <div class="col-12 col-lg-8">
         <pre class="line-numbers">
           <code class="language-js">
-           
+            function buildDropdown() {
+              // get the dropdown menu from the page
+              let dropdownMenu = document.getElementById('eventDropdown');
+            
+              // empty the innerHTML to ensure it is clean
+              dropdownMenu.innerHTML = "";
+            
+              // get our events
+              let currEvents = getEventData();
+            
+              // pull out JUST the city names 
+              let eventCities = currEvents.map((event) =>{
+                return event.city;
+              } );
+              // filter the cities to only DISTINCT city names
+              let distinctCities = [...new Set(eventCities)];
+            
+              // get template from the page
+              const template = document.getElementById('dropdownItemTemplate');
+            
+              // copy the template
+              let dropdownTemplateNode = document.importNode(template.content, true);
+              // get the &lt;a&gt; tag from the template copy
+              let menuItem = dropdownTemplateNode.querySelector('.dropdown-item');
+              // change the text
+              menuItem.textContent = "All Cities";
+              menuItem.setAttribute('data-string', 'All');
+              // add item to the page 
+              dropdownMenu.appendChild(dropdownTemplateNode);
+            
+              for(let i = 0; i < distinctCities.length; i++) {
+                let cityMenuItem = document.importNode(template.content, true);
+                let cityButton = cityMenuItem.querySelector('a');
+                
+                cityButton.textContent = distinctCities[i];
+                cityButton.setAttribute('data-string',distinctCities[i]);
+                dropdownMenu.appendChild(cityMenuItem);
+              }
+            
+              displayStats(currEvents);
+              displayEventData(currEvents);
+            }
+          </code>
+        </pre>
+        <pre class="line-numbers">
+          <code class="language-js">
+            function displayStats(eventsArray) {
+              let stats = calculateStats(eventsArray)
+              // let totalAttendance = calculateTotal(eventsArray);
+              // let averageAttendance = calculateAverage(eventsArray);
+              // let mostAttended = calculateMostAttended(eventsArray);
+              // let leastAttended = calculateLeastAttended(eventsArray);
+            
+              // do math
+              
+              document.getElementById('total').textContent = stats.total.toLocaleString();
+              document.getElementById('average').textContent = stats.averageAttendance.toLocaleString("en-US", {
+                maximumFractionDigits: 0,
+                minimumFractionDigits: 0
+              });
+              document.getElementById('most').textContent = stats.maxAttendance.toLocaleString();
+              document.getElementById('least').textContent = stats.minAttendance.toLocaleString();
+            
+            }
+            
+            function calculateStats(eventsArray) {
+            
+              let sum = 0;
+              let average = 0;
+              let max = eventsArray[0].attendance;
+              let min = eventsArray[0].attendance;
+            
+            
+            
+              for(i = 0; i < eventsArray.length; i++) {
+                let currentEvent = eventsArray[i];
+                
+                sum += currentEvent.attendance;
+            
+                if(currentEvent.attendance > max) {
+                  max = currentEvent.attendance;
+                }
+              
+                if(currentEvent.attendance < min) {
+                  min = currentEvent.attendance;
+                }
+            
+              }
+            
+              average = sum / eventsArray.length;
+            
+              let stats = {
+                total: sum,
+                averageAttendance: average,
+                minAttendance: min,
+                maxAttendance: max
+              }
+              
+            
+              return stats;
+              
+            }
+          </code>
+        </pre>
+        <pre class="line-numbers">
+          <code class="language-js">
+            function displayEventData(eventsArray) {
+
+              let tableBody = document.getElementById('eventTableBody');
+              const tableRowTemplate = document.getElementById('eventTableRowTemplate');
+            
+              tableBody.innerHTML = '';
+            
+              for(i = 0; i < eventsArray.length; i++) {
+                let eventRow = document.importNode(tableRowTemplate.content, true);
+                let currentEvent = eventsArray[i];
+            
+                
+                    // <td data-id="event"></td>
+                    // <td data-id="city"></td>
+                    // <td data-id="state"></td>
+                    // <td data-id="attendance"></td>
+                    // <td data-id="eventDate"></td>
+                
+                let tableCells = eventRow.querySelectorAll('td');
+                
+                tableCells[0].textContent = currentEvent.event;
+                tableCells[1].textContent = currentEvent.city;
+                tableCells[2].textContent = currentEvent.state;
+                tableCells[3].textContent = currentEvent.attendance;
+                tableCells[4].textContent = currentEvent.date;
+            
+                tableBody.appendChild(eventRow);
+              }
+            
+            
+            }
+          </code>
+        </pre>
+        <pre class="line-numbers">
+          <code class="language-js">
+            function calculateStats(eventsArray) {
+
+              let sum = 0;
+              let average = 0;
+              let max = eventsArray[0].attendance;
+              let min = eventsArray[0].attendance;
+            
+            
+            
+              for(i = 0; i < eventsArray.length; i++) {
+                let currentEvent = eventsArray[i];
+                
+                sum += currentEvent.attendance;
+            
+                if(currentEvent.attendance > max) {
+                  max = currentEvent.attendance;
+                }
+              
+                if(currentEvent.attendance < min) {
+                  min = currentEvent.attendance;
+                }
+            
+              }
+            
+              average = sum / eventsArray.length;
+            
+              let stats = {
+                total: sum,
+                averageAttendance: average,
+                minAttendance: min,
+                maxAttendance: max
+              }
+              
+            
+              return stats;
+              
+            }
           </code>
         </pre>
       </div>
       <div class="col-12 col-lg-4">
-        <p>The code is structured in one function.</p>
-        <h5><code>displayMessage()</code></h5>
-        <p>This function displays the message in a Sweet Alert.</p>
+        <h5 class="fs-2 fw-bold pb-3"><code>buildDropdown()</code></h5>
+        <p>At function start, the dropdown menu element is obtained from the page. A variable,
+          <strong>dropdownMenu</strong> is created with this element as it's value.
+          Empty the innerHTML of <strong>dropdownMenu</strong> to ensure there is no current value. Next, the variable
+          <strong>currentEvents</strong> is created and the function <strong>getEventData</strong> is assigned the value
+          of this variable. This function obtains the event data from local storage. Next we get the event city names
+          using the map() method on the array obtained from <strong>getEventData</strong>. These are then filtered to
+          only DISTINCT city names in the variable <strong>distinctCities</strong>. The template for dropdown is then
+          obtained from the document and copied in the element <strong>dropdownTemplateNode</strong>.
+          Next the &lt;a&gt; tag from <strong>dropdownTemplateNode</strong> is obtained from the page, the text
+          changed and added to the page. A for loop is then used to create a button for each distinct city using the
+          length of <strong>distinctCities</strong> as the condition and at the end of each iteration the button is
+          added to <strong>dropdownMenu</strong>. At function end, the functions <strong>displayStats</strong> and
+          <strong>displayEventData</strong> are called using <strong>currentEvents</strong> as the parameter for each.
+        </p>
+        <h5 class="fs-2 fw-bold pb-3"><code>displayStats(eventsArray)</code></h5>
+        <p>This function begins with creating a variable, <strong>stats</strong> with the value being the result of the
+          <strong>calculateStats</strong> function. The elements that represent these stats are then obtained from the
+          document and the values in <strong>stats</strong> are made the html value of these elements using textContent.
+        </p>
+        <h5 class="fs-2 fw-bold pb-3"><code>displayEventData(eventsArray)</code></h5>
+        <p>This function begins by obtaining the table element from the page, creating a variable,
+          <strong>tableBody</strong>, and assigning it the table as it's value. Next the template for the table row is
+          obtained from the page and assigned the value of a variable, <strong>tableRowTemplate</strong>.
+          The html of <strong>tableBody</strong> is emptied and in a for loop using the function paramenter array, a row
+          for the table is created in each iteration. In each iteration, a <strong>currentEvent</strong> is created and
+          the table cells are populated with the events data. At the end of each iteration the row is appended to the
+          <strong>tableBody</strong>.
+        </p>
+        <h5 class="fs-2 fw-bold pb-3"><code>calculateStats(eventsArray)</code></h5>
+        <p>At function start, variables are initialized to represent various event data. In a for loop, some of these
+          data points are calculated. Outside of the loop, the average is calculated.
+          At the function end, an object variable, <strong>stats</strong> is created with the event data calculated in
+          the loop and the average made the values of the properties. This is bject variable is then returned.
+        </p>
       </div>
     </div>
   </main>

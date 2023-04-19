@@ -109,12 +109,7 @@ function buildDropdown() {
 
 function displayStats(eventsArray) {
   let stats = calculateStats(eventsArray)
-  // let totalAttendance = calculateTotal(eventsArray);
-  // let averageAttendance = calculateAverage(eventsArray);
-  // let mostAttended = calculateMostAttended(eventsArray);
-  // let leastAttended = calculateLeastAttended(eventsArray);
-
-  // do math
+  
   
   document.getElementById('total').textContent = stats.total.toLocaleString();
   document.getElementById('average').textContent = stats.averageAttendance.toLocaleString("en-US", {
@@ -132,8 +127,6 @@ function calculateStats(eventsArray) {
   let average = 0;
   let max = eventsArray[0].attendance;
   let min = eventsArray[0].attendance;
-
-
 
   for(i = 0; i < eventsArray.length; i++) {
     let currentEvent = eventsArray[i];
